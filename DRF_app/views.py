@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from .ser import BookSerializer
+from .ser import BookSerializer, UserSerializer
 from django.http import JsonResponse
 from .models import Book
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.contrib.auth.models import User
 @api_view( [ 'GET', 'POST'] )
 
 def book_api(request):
@@ -29,3 +30,20 @@ def book_api2(request):
          
 
 
+
+@api_view(['GET', 'POST'])
+def create_user(request):
+    match request.method:
+        case 'GET':
+            data = User.objects.all()
+            ser = UserSerializer(data, many=True)
+            return Response(ser.data)
+        case 'POST':
+            ser = UserSerializer(data=request.data)
+            if ser.is_valid():
+               ser.save()
+            data = User.objects.all()  
+            ser = UserSerializer(data, many=True)
+            return Response(ser.data)
+            
+  
